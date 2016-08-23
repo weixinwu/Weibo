@@ -1,18 +1,24 @@
 package project.weixin.com.weibo;
 
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.ListViewCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Adapter;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -22,7 +28,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,6 +40,8 @@ public class MainActivity extends AppCompatActivity {
     String app_secret ="480bf946361ec60fbc9f9898eb606a72";
     String client_id = "3937221676";
     String accessToken = null;
+    String getTimelineURL ="https://api.weibo.com/2/statuses/public_timeline.json?";
+    private ListView timeline_LV;
 
 
     @Override
@@ -41,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-
+        timeline_LV = (ListView) findViewById(R.id.timeline_lv);
         final WebView wv = (WebView)findViewById(R.id.login_webView);
         wv.getSettings().setDomStorageEnabled(true);
         wv.getSettings().setJavaScriptEnabled(true);
@@ -68,6 +78,85 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+    }
+
+    public class getTimeline extends AsyncTask<Void,Void,ArrayList<Timeline>>{
+
+        @Override
+        protected ArrayList<Timeline> doInBackground(Void... params) {
+            ArrayList<Timeline> alTimeline = new ArrayList<Timeline>();
+            try {
+                URL getPublicTimeline = new URL(getTimelineURL+"access_token="+accessToken);
+                HttpURLConnection conn = (HttpURLConnection) getPublicTimeline.openConnection();
+                if (conn.getResponseCode()!=200)
+                    return null;
+                else {
+                    JSONObject responseBody = getResponseBody(conn.getInputStream());
+                    JSONArray jsonArray = responseBody.optJSONArray("statuses");
+                    int size = jsonArray.length();
+                    for (int i = 0 ; i < size;i++){
+
+                        JSONObject indexObj = jsonArray.optJSONObject(i);
+                        JSONObject userObj = indexObj.optJSONObject("user");
+                        User user = new User(userObj.optInt("id"),userObj.optString("screen_name"),userObj.optString("name"),
+                                userObj.optInt("province"),userObj.optInt("city"),userObj.optString("location"),userObj.optString("description"),
+                                userObj.optString("profile_image_url"),userObj.optString("profile_url"),userObj.optString("gender"),
+                                userObj.optInt("followers_count"),userObj.optInt("friends_count"),userObj.optInt("favourites_count"),
+                                userObj.optBoolean("geo_enabled"),userObj.optBoolean("verified"),userObj.optString("avatar_large"),userObj.optString("avatar_hd"),
+                                userObj.optBoolean("follow_me"),userObj.optInt("online_status"),userObj.optInt("bi_followers_count"));
+
+                        Timeline tempTimeline = new Timeline(getResources(),indexObj.optString("created_at"),indexObj.optLong("id"),indexObj.optString("text"),indexObj.getBoolean("favorited"),
+                                indexObj.optString("thumbnail_pic"),indexObj.optString("original_pic"),indexObj.optString("source"),user,indexObj.optInt("reposts_count"),indexObj.optInt("comments_count"));
+                        alTimeline.add(tempTimeline);
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return alTimeline;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<Timeline> timelines) {
+            super.onPostExecute(timelines);
+            new getProfilePic().execute(timelines);
+
+
+
+        }
+    }
+
+    public class getProfilePic extends AsyncTask<ArrayList<Timeline>,Void,ArrayList<Timeline>>{
+
+        @Override
+        protected ArrayList<Timeline> doInBackground(ArrayList<Timeline>... params) {
+            int size = params[0].size();
+            for (int i = 0 ; i < size;i++){
+
+                String pic_url =  params[0].get(i).getUsr().getProfile_pic_url();
+                try {
+                    URL url = new URL(pic_url);
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    params[0].get(i).setBitmap(BitmapFactory.decodeStream(conn.getInputStream()));
+                    conn.disconnect();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            return params[0];
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<Timeline> timelines) {
+            int size = timelines.size();
+            ArrayList<String>timelineText = new ArrayList<String>();
+
+            CustonListview adapter = new CustonListview(getBaseContext() ,timelines);
+
+
+            timeline_LV.setAdapter(adapter);
+        }
     }
 
     @Override
@@ -104,6 +193,13 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+
+            new getTimeline().execute();
         }
     }
     public JSONObject getResponseBody(InputStream is ) throws Exception {

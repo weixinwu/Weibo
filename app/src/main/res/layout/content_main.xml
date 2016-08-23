@@ -18,4 +18,10 @@
         android:id="@+id/login_webView">
 
     </WebView>
+
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="600dp"
+        android:id="@+id/timeline_lv"
+        android:divider="@null"></ListView>
 </RelativeLayout>
