@@ -59,7 +59,7 @@ public class CustonListview extends BaseAdapter{
         profile_iv.setImageBitmap(tempTimeline.getBitmap());
         source.setText(" source "+tempTimeline.getSource());
         user_name.setText(tempTimeline.getUsr().getName());
-        time.setText("temp Val");
+        time.setText(tempTimeline.getCreated_at());
         
 //        comment.setText(comment.getText()+" "+tempTimeline.getCommint_cOunt());
 //        repost.setText(comment.getText()+" "+tempTimeline.getRepost_count());

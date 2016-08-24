@@ -21,6 +21,10 @@ import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -68,6 +72,15 @@ public class Timeline  {
         this.usr = usr;
         this.repost_count = repost_count;
         this.commint_cOunt = commint_cOunt;
+
+
+        SimpleDateFormat parserSDF=new SimpleDateFormat("EEE MMM d HH:mm:ss zzz yyyy");
+        Date d = parserSDF.parse(created_at);
+
+        DateFormat df = new SimpleDateFormat("HH:mm");
+
+        this.created_at = df.format(d);
+
 
 
 

@@ -51,7 +51,8 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        timeline_LV = (ListView) findViewById(R.id.timeline_lv);
+
+
         final WebView wv = (WebView)findViewById(R.id.login_webView);
         wv.getSettings().setDomStorageEnabled(true);
         wv.getSettings().setJavaScriptEnabled(true);
@@ -72,7 +73,8 @@ public class MainActivity extends AppCompatActivity {
         wv.getSettings().setAppCacheEnabled(false);
         wv.loadUrl("https://api.weibo.com/oauth2/authorize?client_id=3937221676&response_type=code&display=page&redirect_uri=www.bing.com/");
         wv.clearCache(true);
-
+        timeline_LV = (ListView) findViewById(R.id.timeline_lv);
+        timeline_LV.setVisibility(View.INVISIBLE);
 
 
 
@@ -156,6 +158,7 @@ public class MainActivity extends AppCompatActivity {
 
 
             timeline_LV.setAdapter(adapter);
+            timeline_LV.setVisibility(View.VISIBLE);
         }
     }
 
