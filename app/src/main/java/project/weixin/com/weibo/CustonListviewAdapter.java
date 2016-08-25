@@ -1,11 +1,13 @@
 package project.weixin.com.weibo;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -14,14 +16,14 @@ import java.util.ArrayList;
 /**
  * Created by wuwei on 8/22/2016.
  */
-public class CustonListview extends BaseAdapter{
+public class CustonListviewAdapter extends BaseAdapter{
 
-    String result[];
+
     Context context;
     ArrayList<Timeline> alTimelines ;
     private static LayoutInflater inflater=null;
 
-    public CustonListview(Context context,ArrayList<Timeline> timelines){
+    public CustonListviewAdapter(Context context, ArrayList<Timeline> timelines){
         alTimelines = timelines;
         this.context = context;
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -51,6 +53,8 @@ public class CustonListview extends BaseAdapter{
         TextView source = (TextView) vi.findViewById(R.id.timeline_lv_source_tv);
         TextView time = (TextView) vi.findViewById(R.id.timeline_lv_created_at_time_tv);
         TextView user_name = (TextView) vi.findViewById(R.id.timeline_user_name_tv);
+        MyGridView gridView = (MyGridView) vi.findViewById(R.id.timeline_gridview);
+
         Button comment = (Button) vi.findViewById(R.id.timeline_lv_comment);
         Button repost = (Button) vi.findViewById(R.id.timeline_lv_repost);
         ImageView profile_iv = (ImageView) vi.findViewById(R.id.timeline_lv_profile_pic);
@@ -60,7 +64,14 @@ public class CustonListview extends BaseAdapter{
         source.setText(" source "+tempTimeline.getSource());
         user_name.setText(tempTimeline.getUsr().getName());
         time.setText(tempTimeline.getCreated_at());
-        
+
+        Bitmap[]imageUrl = tempTimeline.bitmaps;
+        System.err.println(imageUrl.length+"length is ");
+        CustomGridviewAdapter adapter = new CustomGridviewAdapter(context,imageUrl);
+        gridView.setAdapter(adapter);
+
+
+
 //        comment.setText(comment.getText()+" "+tempTimeline.getCommint_cOunt());
 //        repost.setText(comment.getText()+" "+tempTimeline.getRepost_count());
         return vi;

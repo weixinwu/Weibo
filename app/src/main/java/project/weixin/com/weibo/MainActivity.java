@@ -1,35 +1,29 @@
 package project.weixin.com.weibo;
 
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.ListViewCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Adapter;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -40,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
     String app_secret ="480bf946361ec60fbc9f9898eb606a72";
     String client_id = "3937221676";
     String accessToken = null;
-    String getTimelineURL ="https://api.weibo.com/2/statuses/public_timeline.json?";
+    String getTimelineURL ="https://api.weibo.com/2/statuses/friends_timeline.json?";
     private ListView timeline_LV;
 
 
@@ -88,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
         protected ArrayList<Timeline> doInBackground(Void... params) {
             ArrayList<Timeline> alTimeline = new ArrayList<Timeline>();
             try {
-                URL getPublicTimeline = new URL(getTimelineURL+"access_token="+accessToken);
+                URL getPublicTimeline = new URL(getTimelineURL+"access_token="+accessToken+"&count=18");
                 HttpURLConnection conn = (HttpURLConnection) getPublicTimeline.openConnection();
                 if (conn.getResponseCode()!=200)
                     return null;
@@ -99,6 +93,8 @@ public class MainActivity extends AppCompatActivity {
                     for (int i = 0 ; i < size;i++){
 
                         JSONObject indexObj = jsonArray.optJSONObject(i);
+                        JSONArray imageURLArray = indexObj.optJSONArray("pic_urls");
+                        String []imageUrl = getImgURLfromTimeline(imageURLArray);
                         JSONObject userObj = indexObj.optJSONObject("user");
                         User user = new User(userObj.optInt("id"),userObj.optString("screen_name"),userObj.optString("name"),
                                 userObj.optInt("province"),userObj.optInt("city"),userObj.optString("location"),userObj.optString("description"),
@@ -107,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
                                 userObj.optBoolean("geo_enabled"),userObj.optBoolean("verified"),userObj.optString("avatar_large"),userObj.optString("avatar_hd"),
                                 userObj.optBoolean("follow_me"),userObj.optInt("online_status"),userObj.optInt("bi_followers_count"));
 
-                        Timeline tempTimeline = new Timeline(getResources(),indexObj.optString("created_at"),indexObj.optLong("id"),indexObj.optString("text"),indexObj.getBoolean("favorited"),
+                        Timeline tempTimeline = new Timeline(getResources(),imageUrl,indexObj.optString("created_at"),indexObj.optLong("id"),indexObj.optString("text"),indexObj.getBoolean("favorited"),
                                 indexObj.optString("thumbnail_pic"),indexObj.optString("original_pic"),indexObj.optString("source"),user,indexObj.optInt("reposts_count"),indexObj.optInt("comments_count"));
                         alTimeline.add(tempTimeline);
                     }
@@ -149,19 +145,48 @@ public class MainActivity extends AppCompatActivity {
             return params[0];
         }
 
+
         @Override
         protected void onPostExecute(ArrayList<Timeline> timelines) {
             int size = timelines.size();
-            ArrayList<String>timelineText = new ArrayList<String>();
-
-            CustonListview adapter = new CustonListview(getBaseContext() ,timelines);
 
 
+
+            new getTimelinesImage().execute(timelines);
+
+
+        }
+    }
+
+    public class getTimelinesImage extends AsyncTask<ArrayList<Timeline>,Void,ArrayList<Timeline>>{
+
+        @Override
+        protected ArrayList<Timeline> doInBackground(ArrayList<Timeline>... params) {
+            int size = params[0].size();
+
+            for (int i = 0 ; i < size;i++){
+                Timeline timelines = params[0].get(i);
+                String []url = timelines.imageURL;
+                Bitmap []bitmaps = new Bitmap[url.length];
+                for (int j = 0 ; j < url.length;j++) {
+                    try {
+                        bitmaps[j] = getBitmapFromUrl(url[j]);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                timelines.setBitmaps(bitmaps);
+            }
+            return params[0];
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<Timeline> alTimelines) {
+            CustonListviewAdapter adapter = new CustonListviewAdapter(getBaseContext() ,alTimelines);
             timeline_LV.setAdapter(adapter);
             timeline_LV.setVisibility(View.VISIBLE);
         }
     }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -232,5 +257,26 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+    public String[] getImgURLfromTimeline(JSONArray jsonArray){
+        if (jsonArray == null)
+            return null;
+        int size = jsonArray.length();
+        String []url = new String[size];
+
+        for (int i = 0 ; i < size;i++){
+            url[i] = jsonArray.optJSONObject(i).optString("thumbnail_pic");
+        }
+        return url;
+    }
+    public Bitmap getBitmapFromUrl(String url) throws IOException {
+        Bitmap retVal = null;
+        URL imageUrl = new URL(url);
+        URLConnection  connection = imageUrl.openConnection();
+        InputStream is = (InputStream)connection.getContent();
+        if (is == null)
+            retVal = BitmapFactory.decodeResource(getResources(),R.mipmap.ic_launcher);
+        else retVal = BitmapFactory.decodeStream(is);
+        return retVal;
     }
 }

@@ -44,6 +44,8 @@ public class Timeline  {
     private int repost_count;
     private int commint_cOunt;
     private Resources res;
+    public String[] imageURL;
+    public Bitmap[] bitmaps;
 
     public Bitmap getBitmap() {
         return bitmap;
@@ -51,9 +53,10 @@ public class Timeline  {
 
     private Bitmap bitmap;
 
-    public Timeline(Resources res , String created_at, long id, String text, boolean favorite, String thumbnail_pics, String origina_pics, String s, User usr, int repost_count, int commint_cOunt) throws Exception {
+    public Timeline(Resources res ,String[] imageURL, String created_at, long id, String text, boolean favorite, String thumbnail_pics, String origina_pics, String s, User usr, int repost_count, int commint_cOunt) throws Exception {
 
         this.res = res;
+        this.imageURL = imageURL;
         this.created_at = created_at;
         this.id = id;
         this.text = text;
@@ -161,5 +164,16 @@ public class Timeline  {
         else
             this.bitmap = BitmapFactory.decodeResource(res,R.mipmap.ic_launcher);
         this.bitmap = Bitmap.createScaledBitmap(this.bitmap,this.bitmap.getWidth()*4,this.bitmap.getHeight()*4,false);
+    }
+
+    public void setBitmaps(Bitmap[] bitmaps){
+        this.bitmaps = bitmaps;
+        scaleBitmap();
+    }
+    public void scaleBitmap(){
+        int size = bitmaps.length;
+        for (int i = 0 ; i < size;i++){
+            bitmaps[i]=Bitmap.createScaledBitmap(bitmaps[i],160,160,false);
+        }
     }
 }
