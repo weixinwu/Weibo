@@ -65,7 +65,7 @@ public class CustonListviewAdapter extends BaseAdapter{
         user_name.setText(tempTimeline.getUsr().getName());
         time.setText(tempTimeline.getCreated_at());
 
-        Bitmap[]imageUrl = tempTimeline.bitmaps;
+        String[]imageUrl = tempTimeline.imageURL;
         System.err.println(imageUrl.length+"length is ");
         CustomGridviewAdapter adapter = new CustomGridviewAdapter(context,imageUrl);
         gridView.setAdapter(adapter);

@@ -13,16 +13,16 @@ import android.widget.ImageView;
  */
 public class CustomGridviewAdapter extends BaseAdapter{
     private Context context;
-    private Bitmap[] bitmaps;
+    private String[] imageURL;
     private static LayoutInflater inflater=null;
-    public CustomGridviewAdapter(Context context, Bitmap[] bitmaps){
+    public CustomGridviewAdapter(Context context, String[] imageURL){
         this.context = context;
-        this.bitmaps = bitmaps;
+        this.imageURL = imageURL;
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
     @Override
     public int getCount() {
-        return bitmaps.length;
+        return imageURL.length;
     }
 
     @Override
@@ -41,9 +41,10 @@ public class CustomGridviewAdapter extends BaseAdapter{
         if (vi==null)
             vi = inflater.inflate(R.layout.custom_gridview,null);
 
-        ImageView imageView = (ImageView) vi.findViewById(R.id.imageview_in_gridview);
-        imageView.setImageBitmap(bitmaps[position]);
-
+        ImageView imageView = (ImageView)   vi.findViewById(R.id.imageview_in_gridview);
+        imageView.setImageResource(R.drawable.ic_favorite_border_black_24dp);
+        GridviewImage gridviewImage = new GridviewImage(imageView,imageURL[position]);
+        gridviewImage.setImage();
         return vi;
     }
 }

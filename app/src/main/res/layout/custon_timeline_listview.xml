@@ -51,7 +51,8 @@
                     android:layout_height="80dp"
                     android:paddingLeft="30dp"
                     android:paddingTop="10dp"
-                    android:layout_toEndOf="@+id/timeline_lv_profile_pic">
+                    android:layout_toEndOf="@+id/timeline_lv_profile_pic"
+                    android:id="@+id/timeline_user_info_relativeLayout">
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -84,8 +85,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="12dp"
-                    android:layout_below="@+id/timeline_lv_profile_pic"
-                    android:id="@+id/timeline_text"/>
+                    android:layout_below="@+id/timeline_user_info_relativeLayout"
+                    android:id="@+id/timeline_text"
+
+                    />
 
                 <project.weixin.com.weibo.MyGridView
                     android:padding="5dp"

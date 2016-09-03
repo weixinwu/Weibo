@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
         protected ArrayList<Timeline> doInBackground(Void... params) {
             ArrayList<Timeline> alTimeline = new ArrayList<Timeline>();
             try {
-                URL getPublicTimeline = new URL(getTimelineURL+"access_token="+accessToken+"&count=18");
+                URL getPublicTimeline = new URL(getTimelineURL+"access_token="+accessToken+"&count=16");
                 HttpURLConnection conn = (HttpURLConnection) getPublicTimeline.openConnection();
                 if (conn.getResponseCode()!=200)
                     return null;
@@ -169,20 +169,18 @@ public class MainActivity extends AppCompatActivity {
                 String []url = timelines.imageURL;
                 Bitmap []bitmaps = new Bitmap[url.length];
                 for (int j = 0 ; j < url.length;j++) {
-                    try {
-                        bitmaps[j] = getBitmapFromUrl(url[j]);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+
+                    System.err.println(timelines.imageURL);
+
                 }
-                timelines.setBitmaps(bitmaps);
+                //timelines.setBitmaps(bitmaps);
             }
             return params[0];
         }
 
         @Override
         protected void onPostExecute(ArrayList<Timeline> alTimelines) {
-            CustonListviewAdapter adapter = new CustonListviewAdapter(getBaseContext() ,alTimelines);
+             CustonListviewAdapter adapter = new CustonListviewAdapter(getBaseContext() ,alTimelines);
             timeline_LV.setAdapter(adapter);
             timeline_LV.setVisibility(View.VISIBLE);
         }
