@@ -2,6 +2,7 @@ package project.weixin.com.weibo;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.util.LruCache;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,10 +23,12 @@ public class CustonListviewAdapter extends BaseAdapter{
     Context context;
     ArrayList<Timeline> alTimelines ;
     private static LayoutInflater inflater=null;
+    private static LruCache<String,Bitmap> cache;
 
-    public CustonListviewAdapter(Context context, ArrayList<Timeline> timelines){
+    public CustonListviewAdapter(Context context, ArrayList<Timeline> timelines,LruCache<String,Bitmap> mCache){
         alTimelines = timelines;
         this.context = context;
+        this.cache = mCache;
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
     @Override
@@ -66,8 +69,7 @@ public class CustonListviewAdapter extends BaseAdapter{
         time.setText(tempTimeline.getCreated_at());
 
         String[]imageUrl = tempTimeline.imageURL;
-        System.err.println(imageUrl.length+"length is ");
-        CustomGridviewAdapter adapter = new CustomGridviewAdapter(context,imageUrl);
+        CustomGridviewAdapter adapter = new CustomGridviewAdapter(context,imageUrl,cache);
         gridView.setAdapter(adapter);
 
 

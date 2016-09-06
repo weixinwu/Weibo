@@ -2,6 +2,7 @@ package project.weixin.com.weibo;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.util.LruCache;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,10 +16,12 @@ public class CustomGridviewAdapter extends BaseAdapter{
     private Context context;
     private String[] imageURL;
     private static LayoutInflater inflater=null;
-    public CustomGridviewAdapter(Context context, String[] imageURL){
+    private static LruCache<String,Bitmap> cache;
+    public CustomGridviewAdapter(Context context, String[] imageURL, LruCache<String,Bitmap> mCache){
         this.context = context;
         this.imageURL = imageURL;
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        this.cache = mCache;
     }
     @Override
     public int getCount() {
@@ -43,7 +46,7 @@ public class CustomGridviewAdapter extends BaseAdapter{
 
         ImageView imageView = (ImageView)   vi.findViewById(R.id.imageview_in_gridview);
         imageView.setImageResource(R.drawable.ic_favorite_border_black_24dp);
-        GridviewImage gridviewImage = new GridviewImage(imageView,imageURL[position]);
+        GridviewImage gridviewImage = new GridviewImage(imageView,imageURL[position],cache);
         gridviewImage.setImage();
         return vi;
     }

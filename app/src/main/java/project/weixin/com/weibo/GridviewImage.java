@@ -3,6 +3,7 @@ package project.weixin.com.weibo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.util.LruCache;
 import android.widget.ImageView;
 
 import java.io.IOException;
@@ -16,13 +17,20 @@ public class GridviewImage {
 
     public ImageView im;
     public String url;
-
-    public GridviewImage(ImageView im, String url) {
+    private LruCache<String,Bitmap> cache;
+    public GridviewImage(ImageView im, String url,LruCache<String,Bitmap> mCache) {
         this.im = im;
         this.url = url;
+        this.cache = mCache;
     }
     public void setImage(){
-        new DownloadImage().execute(url);
+        Bitmap bitmap = cache.get(url);
+        if (bitmap!=null){
+            im.setImageBitmap(bitmap);
+        }
+        else {
+            new DownloadImage().execute(url);
+        }
     }
 
     public Bitmap getImageFromURL(String url) throws IOException {
@@ -39,7 +47,7 @@ public class GridviewImage {
             Bitmap tempBitmap= null;
             try {
                 tempBitmap = getImageFromURL(params[0]);
-
+                cache.put(url,tempBitmap);
             } catch (IOException e) {
                 e.printStackTrace();
             }

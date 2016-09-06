@@ -6,12 +6,14 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.LruCache;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -37,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     String getTimelineURL ="https://api.weibo.com/2/statuses/friends_timeline.json?";
     private ListView timeline_LV;
 
+    private LruCache<String, Bitmap> mMemoryCache;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +47,16 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+
+
+
+
+        final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
+        final int cacheSize = (int) (maxMemory / (8));
+        mMemoryCache = new LruCache<String,Bitmap>(cacheSize);
+
+
 
 
 
@@ -69,6 +82,9 @@ public class MainActivity extends AppCompatActivity {
         wv.clearCache(true);
         timeline_LV = (ListView) findViewById(R.id.timeline_lv);
         timeline_LV.setVisibility(View.INVISIBLE);
+
+
+
 
 
 
@@ -168,19 +184,14 @@ public class MainActivity extends AppCompatActivity {
                 Timeline timelines = params[0].get(i);
                 String []url = timelines.imageURL;
                 Bitmap []bitmaps = new Bitmap[url.length];
-                for (int j = 0 ; j < url.length;j++) {
 
-                    System.err.println(timelines.imageURL);
-
-                }
-                //timelines.setBitmaps(bitmaps);
             }
             return params[0];
         }
 
         @Override
         protected void onPostExecute(ArrayList<Timeline> alTimelines) {
-             CustonListviewAdapter adapter = new CustonListviewAdapter(getBaseContext() ,alTimelines);
+            CustonListviewAdapter adapter = new CustonListviewAdapter(getBaseContext() ,alTimelines,mMemoryCache);
             timeline_LV.setAdapter(adapter);
             timeline_LV.setVisibility(View.VISIBLE);
         }
