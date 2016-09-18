@@ -1,5 +1,6 @@
 package project.weixin.com.weibo;
 
+import android.app.AlertDialog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -7,6 +8,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.LruCache;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -287,5 +289,15 @@ public class MainActivity extends AppCompatActivity {
             retVal = BitmapFactory.decodeResource(getResources(),R.mipmap.ic_launcher);
         else retVal = BitmapFactory.decodeStream(is);
         return retVal;
+    }
+    //buton listener
+    public void repostOnClickListener(View v){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        // Get the layout inflater
+        LayoutInflater inflater = this.getLayoutInflater();
+        builder.setView(inflater.inflate(R.layout.repost_dialog_layout,null));
+        builder.create().show();
+
+
     }
 }

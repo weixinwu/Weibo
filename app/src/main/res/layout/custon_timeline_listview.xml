@@ -114,10 +114,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="30dp"
                     android:text="comment"
-
                     android:background="#0aCDCCCC"
                     android:textSize="10sp"
-                    android:layout_weight="0.5"
+                    android:layout_weight="0.33"
                     android:id="@+id/timeline_lv_comment"/>
                 <Button
                     android:layout_width="match_parent"
@@ -125,8 +124,19 @@
                     android:text="repost"
                     android:background="#0aCDCCCC"
                     android:textSize="10sp"
-                    android:layout_weight="0.5"
-                    android:id="@+id/timeline_lv_repost"/>
+                    android:layout_weight="0.33"
+                    android:id="@+id/timeline_lv_repost"
+                    android:onClick="repostOnClickListener"/>
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="30sp"
+                    android:text="like"
+                    android:background="#0aCDCCCC"
+                    android:textSize="10sp"
+                    android:layout_weight="0.33"
+                    android:id="@+id/timeline_lv_like"
+
+                    />
             </LinearLayout>
         </RelativeLayout>
 
