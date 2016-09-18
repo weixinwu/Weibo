@@ -2,6 +2,7 @@ package project.weixin.com.weibo;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.LruCache;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -45,7 +46,9 @@ public class CustomGridviewAdapter extends BaseAdapter{
             vi = inflater.inflate(R.layout.custom_gridview,null);
 
         ImageView imageView = (ImageView)   vi.findViewById(R.id.imageview_in_gridview);
-        imageView.setImageResource(R.drawable.ic_favorite_border_black_24dp);
+        Bitmap temp = BitmapFactory.decodeResource(context.getResources(),R.drawable.rsz_default);
+        temp = temp.createScaledBitmap(temp,120,120,false);
+        imageView.setImageBitmap(temp);
         GridviewImage gridviewImage = new GridviewImage(imageView,imageURL[position],cache);
         gridviewImage.setImage();
         return vi;
