@@ -1,8 +1,12 @@
 package project.weixin.com.weibo;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -14,6 +18,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -49,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
 
 
 
@@ -292,12 +298,10 @@ public class MainActivity extends AppCompatActivity {
     }
     //buton listener
     public void repostOnClickListener(View v){
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        // Get the layout inflater
-        LayoutInflater inflater = this.getLayoutInflater();
-        builder.setView(inflater.inflate(R.layout.repost_dialog_layout,null));
-        builder.create().show();
 
+        startActivity(new Intent(getBaseContext(),RepostActivity.class));
 
     }
+
+
 }
